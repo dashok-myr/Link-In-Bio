@@ -1,11 +1,13 @@
 import ProfileImageEditor from "./ProfileImageEditor.tsx";
 import ProfileUserInfo from "./ProfileUserInfo.tsx";
 import { useContext } from "react";
-import { UserInfoContext } from "../context/UserInfoProvider.tsx";
+import { UserContext } from "../context/UserProvider.tsx";
 
 export default function ProfileDetailsEditor() {
-  const { userInfo, setName, setLastName, setEmail, setImage } =
-    useContext(UserInfoContext);
+  const { user, setName, setLastName, setEmail, setImage } =
+    useContext(UserContext);
+
+  if (!user) return null;
 
   return (
     <div className="flex flex-col gap-5">
@@ -13,15 +15,27 @@ export default function ProfileDetailsEditor() {
       <div className="text-sm text-dark-med">
         Add your details to create a personal touch to your profile.
       </div>
-      <ProfileImageEditor image={userInfo.image} onImageChange={setImage} />
-      <ProfileUserInfo
-        onNameChange={setName}
-        userName={userInfo.userName}
-        onLastNameChange={setLastName}
-        userLastName={userInfo.userLastName}
-        onEmailChange={setEmail}
-        userEmail={userInfo.userEmail}
+      <ProfileImageEditor
+        profileUrl={user.profileUrl}
+        onImageChange={(file) => {
+          setImage(file);
+        }}
       />
+      <ProfileUserInfo
+        onNameChange={(e) => {
+          setName(e.target.value);
+        }}
+        firstName={user.firstName}
+        onLastNameChange={(e) => {
+          setLastName(e.target.value);
+        }}
+        lastName={user.lastName}
+        onEmailChange={(e) => {
+          setEmail(e.target.value);
+        }}
+        email={user.email}
+      />
+      `
     </div>
   );
 }

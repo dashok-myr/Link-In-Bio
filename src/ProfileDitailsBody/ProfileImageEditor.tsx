@@ -3,12 +3,12 @@ import uploadImageGray from "../assets/upload-img-white.svg";
 import { useRef } from "react";
 
 interface IProfileImageEditor {
-  image: File | null;
+  profileUrl: File | null;
   onImageChange: (image: File) => void;
 }
 
 export default function ProfileImageEditor({
-  image,
+  profileUrl,
   onImageChange,
 }: IProfileImageEditor) {
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -23,12 +23,12 @@ export default function ProfileImageEditor({
             inputRef.current?.click();
           }}
         >
-          {image ? (
+          {profileUrl ? (
             <div className="relative">
               <div className="relative w-40 h-40">
                 <img
                   className="object-cover w-full h-full rounded-lg"
-                  src={URL.createObjectURL(image)}
+                  src={URL.createObjectURL(profileUrl)}
                   alt="not found"
                 />
                 <div className="absolute top-0 left-0 w-full h-full bg-black opacity-50 rounded-lg"></div>

@@ -1,11 +1,14 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import {
+  createUserWithEmailAndPassword,
+  getAuth,
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+} from "firebase/auth";
+import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
+import { IUser } from "../context/UserProvider.tsx";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
   authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -16,6 +19,53 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+initializeApp(firebaseConfig);
+
+export const auth = getAuth();
+export const signInWithPassword = (email: string, password: string) =>
+  signInWithEmailAndPassword(auth, email, password);
+
+export const signOutUser = async () => signOut(auth);
+
+export const onAuthStateChangedListener = (
+  callback: (user: IUser | null) => void
+) => {
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  return onAuthStateChanged(auth, callback);
+};
+export const db = getFirestore();
+
+async function updateFirebaseUser(userUid: string, userData: Partial<IUser>) {
+  await setDoc(doc(db, "users", userUid), userData, { merge: true });
+}
+
+export const createUserDocFromAuth = async (userAuth: IUser) => {
+  const userDocRef = doc(db, "users", userAuth.uid);
+  const userSnapshot = await getDoc(userDocRef);
+
+  if (!userSnapshot.exists()) {
+    const { email } = userAuth;
+    const createdAt = new Date();
+
+    try {
+      await updateFirebaseUser(userAuth.uid, {
+        uid: userAuth.uid,
+        email,
+        createdAt,
+      });
+    } catch (error: any) {
+      console.log("error creating the user", error.message);
+    }
+  }
+  return userDocRef;
+};
+
+export const createAuthUserWithEmailAndPassword = async (
+  email: string,
+  password: string
+) => {
+  if (!email || !password) return;
+
+  return await createUserWithEmailAndPassword(auth, email, password);
+};

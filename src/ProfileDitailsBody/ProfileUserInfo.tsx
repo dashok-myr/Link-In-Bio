@@ -1,20 +1,20 @@
 import { ChangeEvent } from "react";
 
 interface IProfileUserInfo {
-  userName: string;
+  firstName: string | undefined;
   onNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  userLastName: string;
+  lastName: string | undefined;
   onLastNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-  userEmail: string;
+  email: string;
   onEmailChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function ProfileUserInfo({
-  userName,
+  firstName,
   onNameChange,
-  userLastName,
+  lastName,
   onLastNameChange,
-  userEmail,
+  email,
   onEmailChange,
 }: IProfileUserInfo) {
   return (
@@ -22,7 +22,7 @@ export default function ProfileUserInfo({
       <div className="flex items-center w-full">
         <div className="basis-1/2 w-full text-dark-med">First Name*</div>
         <input
-          value={userName}
+          value={firstName}
           onChange={onNameChange}
           className="w-full text-dark-med bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"
           placeholder="e.g. John"
@@ -31,7 +31,7 @@ export default function ProfileUserInfo({
       <div className="flex items-center w-full">
         <div className="basis-1/2 w-full text-dark-med">Last Name*</div>
         <input
-          value={userLastName}
+          value={lastName}
           onChange={onLastNameChange}
           className="w-full text-dark-med bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"
           placeholder="e.g. Apleeseed"
@@ -40,7 +40,7 @@ export default function ProfileUserInfo({
       <div className="flex items-center w-full">
         <div className="basis-1/2 w-full text-dark-med">Email</div>
         <input
-          value={userEmail}
+          value={email}
           onChange={onEmailChange}
           className="w-full text-dark-med bg-gray-50 border border-gray-300 text-sm rounded-lg p-2.5"
           placeholder="e.g. email@example.com"
