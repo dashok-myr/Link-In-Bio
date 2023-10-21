@@ -16,7 +16,7 @@ export function PreviewLinkSkeleton() {
   );
 }
 
-export default function Preview() {
+export default function BodyPreview() {
   const { links } = useContext(LinksContext);
   const { user } = useContext(UserContext);
 

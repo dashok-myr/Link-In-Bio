@@ -8,6 +8,7 @@ import {
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { IUser } from "../context/UserProvider.tsx";
+import { ILink } from "../context/LinksProvider.tsx";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -35,6 +36,17 @@ export const onAuthStateChangedListener = (
   return onAuthStateChanged(auth, callback);
 };
 export const db = getFirestore();
+
+export function getLinksDocRef(userUid: string) {
+  return doc(db, "links", userUid);
+}
+
+export async function updateFirebaseLink(
+  userUid: string,
+  linkData: { links: ILink[] }
+) {
+  await setDoc(getLinksDocRef(userUid), linkData, { merge: true });
+}
 
 async function updateFirebaseUser(userUid: string, userData: Partial<IUser>) {
   await setDoc(doc(db, "users", userUid), userData, { merge: true });

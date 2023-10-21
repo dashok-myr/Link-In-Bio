@@ -7,6 +7,8 @@ import SignIn from "./SignIn.tsx";
 import "./index.css";
 import SignUp from "./SignUp.tsx";
 import { UserProvider } from "./context/UserProvider.tsx";
+import Preview from "./Preview.tsx";
+import { signOutUser } from "./firebase/firebase.tsx";
 
 export default function App() {
   const navigate = useNavigate();
@@ -16,12 +18,21 @@ export default function App() {
       <LinksProvider>
         <div className="bg-dark-lighter p-5 h-screen">
           <Routes>
+            <Route path="preview" element={<Preview />} />
             <Route
               path="/"
               element={
                 <Navigation
                   onLinksClick={() => navigate("/")}
                   onProfileClick={() => navigate("/profile")}
+                  onSignOutBtn={() => {
+                    signOutUser();
+                    navigate("/signin");
+                  }}
+                  onSignInBtn={() => {
+                    navigate("/signin");
+                  }}
+                  onPreviewBtn={() => navigate("/preview")}
                 />
               }
             >

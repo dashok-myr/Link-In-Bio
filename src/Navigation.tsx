@@ -1,16 +1,25 @@
 import classNames from "classnames";
 import { Outlet, useLocation } from "react-router-dom";
+import { UserContext } from "./context/UserProvider.tsx";
+import { useContext } from "react";
 
 interface INavBarProp {
   onLinksClick: () => void;
   onProfileClick: () => void;
+  onSignOutBtn: () => void;
+  onSignInBtn: () => void;
+  onPreviewBtn: () => void;
 }
 
 export default function Navigation({
   onLinksClick,
   onProfileClick,
+  onSignOutBtn,
+  onSignInBtn,
+  onPreviewBtn,
 }: INavBarProp) {
   const location = useLocation();
+  const { user } = useContext(UserContext);
 
   return (
     <>
@@ -40,9 +49,29 @@ export default function Navigation({
               Profile Details
             </button>
           </div>
-          <button className="bg-transparent hover:bg-purple-light text-purple font-semibold py-2 px-4 border border-purple hover:border-transparent rounded-lg">
-            Preview
-          </button>
+          <div className="flex items-center gap-3">
+            {!user?.email ? (
+              <button
+                onClick={onSignInBtn}
+                className="font-medium text-purple hover:text-dark"
+              >
+                Sing In
+              </button>
+            ) : (
+              <button
+                onClick={onSignOutBtn}
+                className="font-medium text-purple hover:text-dark"
+              >
+                Sing Out
+              </button>
+            )}
+            <button
+              onClick={onPreviewBtn}
+              className="bg-transparent hover:bg-purple-light text-purple font-semibold py-2 px-4 border border-purple hover:border-transparent rounded-lg"
+            >
+              Preview
+            </button>
+          </div>
         </div>
       </div>
       <Outlet />

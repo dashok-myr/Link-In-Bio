@@ -11,6 +11,12 @@ import {
   onAuthStateChangedListener,
 } from "../firebase/firebase.tsx";
 
+export interface IAuthUser {
+  uid: string;
+  email: string;
+  createdAt: Date;
+}
+
 export interface IUser {
   uid: string;
   email: string;
