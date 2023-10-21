@@ -7,7 +7,7 @@ import {
   signOut,
 } from "firebase/auth";
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
-import { IUser } from "../context/UserProvider.tsx";
+import { IAuthUser, IUser } from "../context/UserProvider.tsx";
 import { ILink } from "../context/LinksProvider.tsx";
 
 const firebaseConfig = {
@@ -52,25 +52,25 @@ async function updateFirebaseUser(userUid: string, userData: Partial<IUser>) {
   await setDoc(doc(db, "users", userUid), userData, { merge: true });
 }
 
-export const createUserDocFromAuth = async (userAuth: IUser) => {
-  const userDocRef = doc(db, "users", userAuth.uid);
-  const userSnapshot = await getDoc(userDocRef);
+export const getOrCreateFirebaseUser = async (authUser: IAuthUser) => {
+  let userDocRef = doc(db, "users", authUser.uid);
+  let userSnapshot = await getDoc(userDocRef);
 
-  if (!userSnapshot.exists()) {
-    const { email } = userAuth;
-    const createdAt = new Date();
-
-    try {
-      await updateFirebaseUser(userAuth.uid, {
-        uid: userAuth.uid,
-        email,
-        createdAt,
-      });
-    } catch (error: any) {
-      console.log("error creating the user", error.message);
-    }
+  if (userSnapshot.exists()) {
+    return userSnapshot.data() as IUser;
   }
-  return userDocRef;
+
+  const { email } = authUser;
+  const createdAt = new Date();
+  await updateFirebaseUser(authUser.uid, {
+    uid: authUser.uid,
+    email,
+    createdAt,
+  });
+
+  userDocRef = doc(db, "users", authUser.uid);
+  userSnapshot = await getDoc(userDocRef);
+  return userSnapshot.data() as IUser;
 };
 
 export const createAuthUserWithEmailAndPassword = async (

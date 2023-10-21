@@ -55,14 +55,14 @@ export default function Navigation({
                 onClick={onSignInBtn}
                 className="font-medium text-purple hover:text-dark"
               >
-                Sing In
+                Sign In
               </button>
             ) : (
               <button
                 onClick={onSignOutBtn}
                 className="font-medium text-purple hover:text-dark"
               >
-                Sing Out
+                Sign Out
               </button>
             )}
             <button

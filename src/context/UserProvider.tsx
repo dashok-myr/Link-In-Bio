@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import {
-  createUserDocFromAuth,
+  getOrCreateFirebaseUser,
   onAuthStateChangedListener,
 } from "../firebase/firebase.tsx";
 
@@ -46,12 +46,15 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<IUser | null>(null);
 
   useEffect(() => {
-    return onAuthStateChangedListener((user: IUser | null) => {
-      if (user) {
-        createUserDocFromAuth(user);
+    return onAuthStateChangedListener(async (authUser: IAuthUser | null) => {
+      const isLoggedOut = authUser === null;
+      if (isLoggedOut) {
+        setUser(null);
+        return;
       }
-      setUser(user);
-      console.log(user);
+
+      const userData = await getOrCreateFirebaseUser(authUser);
+      setUser(userData);
     });
   }, []);
 
