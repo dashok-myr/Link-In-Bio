@@ -48,7 +48,10 @@ export async function updateFirebaseLink(
   await setDoc(getLinksDocRef(userUid), linkData, { merge: true });
 }
 
-async function updateFirebaseUser(userUid: string, userData: Partial<IUser>) {
+export async function updateFirebaseUser(
+  userUid: string,
+  userData: Partial<IUser>
+) {
   await setDoc(doc(db, "users", userUid), userData, { merge: true });
 }
 

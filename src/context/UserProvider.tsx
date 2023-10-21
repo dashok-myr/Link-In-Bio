@@ -9,6 +9,7 @@ import {
 import {
   getOrCreateFirebaseUser,
   onAuthStateChangedListener,
+  updateFirebaseUser,
 } from "../firebase/firebase.tsx";
 
 export interface IAuthUser {
@@ -61,20 +62,20 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   function setName(firstName: string) {
     if (!user) return;
 
-    const copy = { ...user, firstName: firstName };
-    setUser(copy);
+    setUser({ ...user, firstName: firstName });
+    updateFirebaseUser(user.uid, { firstName: firstName });
   }
 
   function setLastName(lastName: string) {
     if (!user) return;
-    const copy = { ...user, lastName: lastName };
-    setUser(copy);
+    setUser({ ...user, lastName: lastName });
+    updateFirebaseUser(user.uid, { lastName: lastName });
   }
 
   function setEmail(email: string) {
     if (!user) return null;
-    const copy = { ...user, email: email };
-    setUser(copy);
+    setUser({ ...user, email: email });
+    updateFirebaseUser(user.uid, { email: email });
   }
 
   function setImage(image: File) {
