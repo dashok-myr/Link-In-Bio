@@ -1,8 +1,6 @@
 import { useContext } from "react";
-import { LinksContext } from "../context/LinksProvider.tsx";
-import { PLATFORM_INFO } from "./PLATFORM_INFO.ts";
-import arrowRight from "../assets/arrow-right.svg";
 import { UserContext } from "../context/UserProvider.tsx";
+import Links from "../Links.tsx";
 
 export function PreviewLinkSkeleton() {
   return (
@@ -17,7 +15,6 @@ export function PreviewLinkSkeleton() {
 }
 
 export default function BodyPreview() {
-  const { links } = useContext(LinksContext);
   const { user } = useContext(UserContext);
 
   if (!user) return null;
@@ -50,36 +47,7 @@ export default function BodyPreview() {
                 <div className="rounded-lg bg-gray-100 w-20 h-2 mb-10" />
               </>
             )}
-            {links.length > 0 ? (
-              links.map(({ platform }) => {
-                if (platform === null) {
-                  return (
-                    <div
-                      key={platform}
-                      className="rounded-lg bg-gray-100 w-56 h-12"
-                    />
-                  );
-                }
-
-                const { color, icon, label } = PLATFORM_INFO[platform];
-
-                return (
-                  <div
-                    key={platform}
-                    className="flex items-center gap-3 rounded-lg w-56 h-12 p-3 mb-5"
-                    style={{ backgroundColor: color }}
-                  >
-                    <img className="h-7" src={icon} alt="icon" />
-                    <div className="text-white">{label}</div>
-                    <div className="flex w-full justify-end">
-                      <img className="w-5" src={arrowRight} alt="icon" />
-                    </div>
-                  </div>
-                );
-              })
-            ) : (
-              <PreviewLinkSkeleton />
-            )}
+            <Links />
           </div>
         </div>
       </div>

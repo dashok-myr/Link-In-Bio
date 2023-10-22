@@ -41,27 +41,27 @@ export function getLinksDocRef(userUid: string) {
   return doc(db, "links", userUid);
 }
 
-export async function getFirebaseLinks(userUid: string) {
+export async function getFirebaseLinksDocument(userUid: string) {
   const linksDocRef = getLinksDocRef(userUid);
   const linksSnapshot = await getDoc(linksDocRef);
   return linksSnapshot.data();
 }
 
-export async function updateFirebaseLink(
+export async function updateFirebaseLinkDocument(
   userUid: string,
   linkData: { links: ILink[] }
 ) {
   await setDoc(getLinksDocRef(userUid), linkData, { merge: true });
 }
 
-export async function updateFirebaseUser(
+export async function updateFirebaseUserDocument(
   userUid: string,
   userData: Partial<IUser>
 ) {
   await setDoc(doc(db, "users", userUid), userData, { merge: true });
 }
 
-export const getOrCreateFirebaseUser = async (authUser: IAuthUser) => {
+export const getOrCreateFirebaseUserDocument = async (authUser: IAuthUser) => {
   let userDocRef = doc(db, "users", authUser.uid);
   let userSnapshot = await getDoc(userDocRef);
 
@@ -71,7 +71,7 @@ export const getOrCreateFirebaseUser = async (authUser: IAuthUser) => {
 
   const { email } = authUser;
   const createdAt = new Date();
-  await updateFirebaseUser(authUser.uid, {
+  await updateFirebaseUserDocument(authUser.uid, {
     uid: authUser.uid,
     email,
     createdAt,

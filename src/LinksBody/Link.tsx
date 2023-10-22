@@ -3,7 +3,7 @@ import arrowDown from "../assets/arrow-down.svg";
 
 import { IPlatform, SOCIAL_MEDIA_PLATFORMS } from "./SOCIAL_MEDIA_PLATFORMS.ts";
 
-import { PLATFORM_INFO } from "./PLATFORM_INFO.ts";
+import { IPlatformLabel, PLATFORM_INFO } from "./PLATFORM_INFO.ts";
 
 const dropdownPlatforms = [
   SOCIAL_MEDIA_PLATFORMS.LINKEDIN,
@@ -13,6 +13,7 @@ const dropdownPlatforms = [
 ];
 
 interface ILinkProps {
+  selectedDropdownOption: IPlatformLabel | "Options";
   linkNumber: number;
   onRemoveClick: () => void;
   onAddPlatformClick: (platform: IPlatform) => void;
@@ -21,15 +22,13 @@ interface ILinkProps {
 }
 
 export function Link({
+  selectedDropdownOption,
   linkNumber,
   onRemoveClick,
   onAddPlatformClick,
   onUrlChange,
   url,
 }: ILinkProps) {
-  const [selectedDropdownOption, setSelectedDropdownOption] =
-    useState("Options");
-
   const [isDropdownDisplay, setIsDropdownDisplay] = useState(false);
 
   return (
@@ -66,9 +65,7 @@ export function Link({
                 <div key={label} className="py-0.5">
                   <button
                     onClick={() => {
-                      setSelectedDropdownOption(label);
                       setIsDropdownDisplay(false);
-
                       onAddPlatformClick(platform);
                     }}
                     className="text-gray-700 px-4 py-2 text-sm"

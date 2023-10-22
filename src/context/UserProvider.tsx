@@ -7,9 +7,9 @@ import {
   useState,
 } from "react";
 import {
-  getOrCreateFirebaseUser,
+  getOrCreateFirebaseUserDocument,
   onAuthStateChangedListener,
-  updateFirebaseUser,
+  updateFirebaseUserDocument,
 } from "../firebase/firebase.tsx";
 
 export interface IAuthUser {
@@ -54,7 +54,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
         return;
       }
 
-      const userData = await getOrCreateFirebaseUser(authUser);
+      const userData = await getOrCreateFirebaseUserDocument(authUser);
       setUser(userData);
     });
   }, []);
@@ -63,19 +63,19 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
 
     setUser({ ...user, firstName: firstName });
-    updateFirebaseUser(user.uid, { firstName: firstName });
+    updateFirebaseUserDocument(user.uid, { firstName: firstName });
   }
 
   function setLastName(lastName: string) {
     if (!user) return;
     setUser({ ...user, lastName: lastName });
-    updateFirebaseUser(user.uid, { lastName: lastName });
+    updateFirebaseUserDocument(user.uid, { lastName: lastName });
   }
 
   function setEmail(email: string) {
     if (!user) return null;
     setUser({ ...user, email: email });
-    updateFirebaseUser(user.uid, { email: email });
+    updateFirebaseUserDocument(user.uid, { email: email });
   }
 
   function setImage(image: File) {

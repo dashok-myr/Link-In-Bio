@@ -2,6 +2,7 @@ import empty from "../assets/illustration-empty.svg";
 import { Link } from "./Link.tsx";
 import { LinksContext } from "../context/LinksProvider.tsx";
 import { useContext } from "react";
+import { PLATFORM_INFO } from "./PLATFORM_INFO.ts";
 
 export function LinksEditor() {
   const { links, addNewLink, removeLink, setLinkPlatform, setLinkUrl } =
@@ -28,6 +29,9 @@ export function LinksEditor() {
             return (
               <Link
                 key={index}
+                selectedDropdownOption={
+                  link.platform ? PLATFORM_INFO[link.platform].label : "Options"
+                }
                 url={link.url}
                 linkNumber={index + 1}
                 onRemoveClick={() => removeLink(index)}

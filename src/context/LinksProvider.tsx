@@ -6,7 +6,10 @@ import React, {
   useState,
 } from "react";
 import { IPlatform } from "../LinksBody/SOCIAL_MEDIA_PLATFORMS.ts";
-import { getFirebaseLinks, updateFirebaseLink } from "../firebase/firebase.tsx";
+import {
+  getFirebaseLinksDocument,
+  updateFirebaseLinkDocument,
+} from "../firebase/firebase.tsx";
 import { UserContext } from "./UserProvider.tsx";
 
 export interface ILink {
@@ -37,7 +40,7 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     async function loadFirebaseLinks() {
       if (!user) return;
-      const data = await getFirebaseLinks(user?.uid);
+      const data = await getFirebaseLinksDocument(user?.uid);
       setLinks(data?.links || []);
     }
     loadFirebaseLinks();
@@ -48,9 +51,12 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
   }
 
   function removeLink(index: number) {
-    const copyLink = [...links];
-    copyLink.splice(index, 1);
-    setLinks(copyLink);
+    if (!user) return;
+
+    const linksCopy = [...links];
+    linksCopy.splice(index, 1);
+    setLinks(linksCopy);
+    updateFirebaseLinkDocument(user.uid, { links: linksCopy });
   }
 
   function setLinkPlatform(platform: IPlatform, index: number) {
@@ -59,8 +65,7 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
     const copyLink = [...links];
     copyLink[index].platform = platform;
     setLinks(copyLink);
-    const linkData = { links: copyLink };
-    updateFirebaseLink(user.uid, linkData);
+    updateFirebaseLinkDocument(user.uid, { links: copyLink });
   }
 
   function setLinkUrl(url: string, index: number) {
@@ -69,8 +74,7 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
     const copyLink = [...links];
     copyLink[index].url = url;
     setLinks(copyLink);
-    const linkData = { links: copyLink };
-    updateFirebaseLink(user.uid, linkData);
+    updateFirebaseLinkDocument(user.uid, { links: copyLink });
   }
 
   return (

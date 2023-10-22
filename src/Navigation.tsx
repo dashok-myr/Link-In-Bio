@@ -22,7 +22,7 @@ export default function Navigation({
   const { user } = useContext(UserContext);
 
   return (
-    <>
+    <div className="p-5">
       <div className="p-3 bg-white rounded-lg">
         <div className="flex justify-between items-center">
           <div className="font-bold">LIB</div>
@@ -75,6 +75,6 @@ export default function Navigation({
         </div>
       </div>
       <Outlet />
-    </>
+    </div>
   );
 }

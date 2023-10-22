@@ -16,7 +16,7 @@ export default function App() {
   return (
     <UserProvider>
       <LinksProvider>
-        <div className="bg-dark-lighter p-5 h-screen">
+        <div className="bg-dark-lighter h-screen">
           <Routes>
             <Route path="preview" element={<Preview />} />
             <Route
