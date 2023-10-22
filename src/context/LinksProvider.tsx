@@ -1,6 +1,12 @@
-import React, { createContext, ReactNode, useContext, useState } from "react";
+import React, {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { IPlatform } from "../LinksBody/SOCIAL_MEDIA_PLATFORMS.ts";
-import { updateFirebaseLink } from "../firebase/firebase.tsx";
+import { getFirebaseLinks, updateFirebaseLink } from "../firebase/firebase.tsx";
 import { UserContext } from "./UserProvider.tsx";
 
 export interface ILink {
@@ -27,6 +33,15 @@ export const LinksContext = createContext<{
 export default function LinksProvider({ children }: { children: ReactNode }) {
   const [links, setLinks] = useState<ILink[]>([]);
   const { user } = useContext(UserContext);
+
+  useEffect(() => {
+    async function loadFirebaseLinks() {
+      if (!user) return;
+      const data = await getFirebaseLinks(user?.uid);
+      setLinks(data?.links || []);
+    }
+    loadFirebaseLinks();
+  }, [user, user?.uid]);
 
   function addNewLink() {
     setLinks([...links, { platform: null, url: "" }]);

@@ -41,6 +41,12 @@ export function getLinksDocRef(userUid: string) {
   return doc(db, "links", userUid);
 }
 
+export async function getFirebaseLinks(userUid: string) {
+  const linksDocRef = getLinksDocRef(userUid);
+  const linksSnapshot = await getDoc(linksDocRef);
+  return linksSnapshot.data();
+}
+
 export async function updateFirebaseLink(
   userUid: string,
   linkData: { links: ILink[] }
