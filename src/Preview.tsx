@@ -1,17 +1,24 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "./context/UserProvider.tsx";
 import { useNavigate } from "react-router-dom";
 import Links from "./Links.tsx";
 
 export default function Preview() {
+  const [isCopied, setIsCopied] = useState(false);
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   async function copyLink() {
     const currentURL = window.location.href;
-
     await navigator.clipboard.writeText(currentURL);
-    alert("Link copied to clipboard!");
+  }
+
+  function showAndHideCopiedSvelte() {
+    setIsCopied(true);
+
+    setTimeout(() => {
+      setIsCopied(false);
+    }, "2000");
   }
 
   return (
@@ -25,10 +32,19 @@ export default function Preview() {
             Back to Editor
           </button>
           <button
-            onClick={() => copyLink()}
-            className="bg-purple text-white hover:bg-purple-light hover:text-purple font-semibold py-2 px-4 border border-purple hover:border-transparent rounded-lg"
+            onClick={() => {
+              copyLink();
+              showAndHideCopiedSvelte();
+            }}
+            className="relative bg-purple text-white hover:bg-purple-light hover:text-purple font-semibold py-2 px-4 border border-purple hover:border-transparent rounded-lg"
           >
             Share Link
+            {(isCopied && (
+              <div className="flex left-16 justify-center items-center absolute h-5 w-16 rounded-lg bg-purple-med text-purple text-xs">
+                Copied!
+              </div>
+            )) ||
+              ""}
           </button>
         </div>
 
