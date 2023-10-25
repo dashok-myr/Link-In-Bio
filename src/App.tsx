@@ -9,59 +9,64 @@ import SignUp from "./SignUp.tsx";
 import { UserProvider } from "./context/UserProvider.tsx";
 import Preview from "./Preview.tsx";
 import { signOutUser } from "./firebase/firebase.tsx";
+import NotificationProvider from "./context/NotificationProvider.tsx";
 
 export default function App() {
   const navigate = useNavigate();
 
   return (
-    <UserProvider>
-      <LinksProvider>
-        <div className="bg-dark-lighter h-screen">
-          <Routes>
-            <Route path="preview" element={<Preview />} />
-            <Route
-              path="/"
-              element={
-                <Navigation
-                  onLinksClick={() => navigate("/")}
-                  onProfileClick={() => navigate("/profile")}
-                  onSignOutBtn={() => {
-                    signOutUser();
-                    navigate("/signin");
-                  }}
-                  onSignInBtn={() => {
-                    navigate("/signin");
-                  }}
-                  onPreviewBtn={() => navigate("/preview")}
+    <>
+      <NotificationProvider>
+        <UserProvider>
+          <LinksProvider>
+            <div className="bg-dark-lighter h-screen">
+              <Routes>
+                <Route path="preview" element={<Preview />} />
+                <Route
+                  path="/"
+                  element={
+                    <Navigation
+                      onLinksClick={() => navigate("/")}
+                      onProfileClick={() => navigate("/profile")}
+                      onSignOutBtn={() => {
+                        signOutUser();
+                        navigate("/signin");
+                      }}
+                      onSignInBtn={() => {
+                        navigate("/signin");
+                      }}
+                      onPreviewBtn={() => navigate("/preview")}
+                    />
+                  }
+                >
+                  <Route index element={<LinksBody />} />
+                  <Route path="profile" element={<ProfileDetailsBody />} />
+                </Route>
+                <Route
+                  path="signin"
+                  element={
+                    <SignIn
+                      onSignInSuccess={() => {
+                        navigate("/");
+                      }}
+                    />
+                  }
                 />
-              }
-            >
-              <Route index element={<LinksBody />} />
-              <Route path="profile" element={<ProfileDetailsBody />} />
-            </Route>
-            <Route
-              path="signin"
-              element={
-                <SignIn
-                  onSignInSuccess={() => {
-                    navigate("/");
-                  }}
+                <Route
+                  path="signup"
+                  element={
+                    <SignUp
+                      onSignUpSuccess={() => {
+                        navigate("/");
+                      }}
+                    />
+                  }
                 />
-              }
-            />
-            <Route
-              path="signup"
-              element={
-                <SignUp
-                  onSignUpSuccess={() => {
-                    navigate("/");
-                  }}
-                />
-              }
-            />
-          </Routes>
-        </div>
-      </LinksProvider>
-    </UserProvider>
+              </Routes>
+            </div>
+          </LinksProvider>
+        </UserProvider>
+      </NotificationProvider>
+    </>
   );
 }

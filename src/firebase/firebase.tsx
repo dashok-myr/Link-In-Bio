@@ -9,6 +9,7 @@ import {
 import { doc, getDoc, getFirestore, setDoc } from "firebase/firestore";
 import { IAuthUser, IUser } from "../context/UserProvider.tsx";
 import { ILink } from "../context/LinksProvider.tsx";
+import { getDownloadURL, getStorage, ref, uploadBytes } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -20,7 +21,14 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-initializeApp(firebaseConfig);
+const firebaseApp = initializeApp(firebaseConfig);
+const storage = getStorage(firebaseApp);
+
+export async function uploadFirebaseImage(name: string, imageFile: Blob) {
+  const storageRef = ref(storage, `images/${name}`);
+  const snapshot = await uploadBytes(storageRef, imageFile);
+  return await getDownloadURL(snapshot.ref);
+}
 
 export const auth = getAuth();
 export const signInWithPassword = (email: string, password: string) =>

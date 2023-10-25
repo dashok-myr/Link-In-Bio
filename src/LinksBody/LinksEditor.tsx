@@ -1,12 +1,22 @@
 import empty from "../assets/illustration-empty.svg";
 import { Link } from "./Link.tsx";
 import { LinksContext } from "../context/LinksProvider.tsx";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { PLATFORM_INFO } from "./PLATFORM_INFO.ts";
+import saved from "../assets/icon-changes-saved.svg";
+import { NotificationContext } from "../context/NotificationProvider.tsx";
 
 export function LinksEditor() {
-  const { links, addNewLink, removeLink, setLinkPlatform, setLinkUrl } =
-    useContext(LinksContext);
+  const {
+    links,
+    addNewLink,
+    removeLink,
+    setLinkPlatform,
+    setLinkUrl,
+    saveFireBaseLinks,
+  } = useContext(LinksContext);
+  const { setNotification } = useContext(NotificationContext);
+  const [isError, setIsError] = useState(false);
 
   return (
     <div className="p-7 h-screen overflow-y-auto">
@@ -28,6 +38,7 @@ export function LinksEditor() {
           {links.map((link, index) => {
             return (
               <Link
+                isError={isError}
                 key={index}
                 selectedDropdownOption={
                   link.platform ? PLATFORM_INFO[link.platform].label : "Options"
@@ -51,7 +62,24 @@ export function LinksEditor() {
         </div>
       )}
       <div className="flex justify-end mt-5">
-        <button className="bg-purple-light hover:bg-purple-med text-purple font-semibold py-2 px-5 rounded-lg">
+        <button
+          onClick={() => {
+            const anyUrlIsEmpty = links.some((link) => {
+              return link.url === "";
+            });
+            if (anyUrlIsEmpty) {
+              setIsError(true);
+              return;
+            }
+            saveFireBaseLinks();
+            setNotification({
+              icon: saved,
+              label: "Your changes were saved!",
+              isDisplayed: true,
+            });
+          }}
+          className="bg-purple-light hover:bg-purple-med text-purple font-semibold py-2 px-5 rounded-lg"
+        >
           Save
         </button>
       </div>

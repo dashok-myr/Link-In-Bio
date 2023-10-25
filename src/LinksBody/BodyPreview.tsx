@@ -27,7 +27,7 @@ export default function BodyPreview() {
             {user.profileUrl ? (
               <img
                 className="object-cover rounded-full bg-gray-100 w-28 h-28"
-                src={URL.createObjectURL(user.profileUrl)}
+                src={user.profileUrl}
                 alt="profileImg"
               />
             ) : (

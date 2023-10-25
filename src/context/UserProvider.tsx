@@ -10,6 +10,7 @@ import {
   getOrCreateFirebaseUserDocument,
   onAuthStateChangedListener,
   updateFirebaseUserDocument,
+  uploadFirebaseImage,
 } from "../firebase/firebase.tsx";
 
 export interface IAuthUser {
@@ -24,7 +25,7 @@ export interface IUser {
   createdAt: Date;
   firstName: string | undefined;
   lastName: string | undefined;
-  profileUrl: File | null;
+  profileUrl: string | null;
 }
 
 export const UserContext = createContext<{
@@ -34,6 +35,7 @@ export const UserContext = createContext<{
   setLastName: (lastName: string) => void;
   setEmail: (email: string) => void;
   setImage: (image: File) => void;
+  saveFirebaseUserInfo: (uid: string) => void;
 }>({
   user: null,
   setUser: () => {},
@@ -41,6 +43,7 @@ export const UserContext = createContext<{
   setLastName: () => {},
   setEmail: () => {},
   setImage: () => {},
+  saveFirebaseUserInfo: () => {},
 });
 
 export const UserProvider = ({ children }: { children: ReactNode }) => {
@@ -63,13 +66,13 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     if (!user) return;
 
     setUser({ ...user, firstName: firstName });
-    updateFirebaseUserDocument(user.uid, { firstName: firstName });
+    // updateFirebaseUserDocument(user.uid, { firstName: firstName });
   }
 
   function setLastName(lastName: string) {
     if (!user) return;
     setUser({ ...user, lastName: lastName });
-    updateFirebaseUserDocument(user.uid, { lastName: lastName });
+    // updateFirebaseUserDocument(user.uid, { lastName: lastName });
   }
 
   function setEmail(email: string) {
@@ -78,14 +81,31 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
     updateFirebaseUserDocument(user.uid, { email: email });
   }
 
-  function setImage(image: File) {
+  async function setImage(imageFile: File) {
     if (!user) return null;
-    setUser({ ...user, profileUrl: image });
+    const imageUrl = await uploadFirebaseImage(
+      `profile_image_1_${user.uid}`,
+      imageFile
+    );
+    setUser({ ...user, profileUrl: imageUrl });
+    updateFirebaseUserDocument(user.uid, { profileUrl: imageUrl });
+  }
+
+  function saveFirebaseUserInfo(uid: string) {
+    updateFirebaseUserDocument(uid, { ...user });
   }
 
   return (
     <UserContext.Provider
-      value={{ user, setUser, setName, setLastName, setEmail, setImage }}
+      value={{
+        user,
+        setUser,
+        setName,
+        setLastName,
+        setEmail,
+        setImage,
+        saveFirebaseUserInfo,
+      }}
     >
       {children}
     </UserContext.Provider>

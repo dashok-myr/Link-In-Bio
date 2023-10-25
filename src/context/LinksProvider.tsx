@@ -24,6 +24,7 @@ export const LinksContext = createContext<{
   removeLink: (index: number) => void;
   setLinkPlatform: (platform: IPlatform, index: number) => void;
   setLinkUrl: (url: string, index: number) => void;
+  saveFireBaseLinks: () => void;
 }>({
   links: [],
   setLinks: () => {},
@@ -31,6 +32,7 @@ export const LinksContext = createContext<{
   removeLink: () => {},
   setLinkPlatform: () => {},
   setLinkUrl: () => {},
+  saveFireBaseLinks: () => {},
 });
 
 export default function LinksProvider({ children }: { children: ReactNode }) {
@@ -65,7 +67,6 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
     const copyLink = [...links];
     copyLink[index].platform = platform;
     setLinks(copyLink);
-    updateFirebaseLinkDocument(user.uid, { links: copyLink });
   }
 
   function setLinkUrl(url: string, index: number) {
@@ -74,7 +75,12 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
     const copyLink = [...links];
     copyLink[index].url = url;
     setLinks(copyLink);
-    updateFirebaseLinkDocument(user.uid, { links: copyLink });
+  }
+
+  function saveFireBaseLinks() {
+    if (!user) return;
+
+    updateFirebaseLinkDocument(user.uid, { links: links });
   }
 
   return (
@@ -86,6 +92,7 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
         removeLink,
         setLinkPlatform,
         setLinkUrl,
+        saveFireBaseLinks,
       }}
     >
       {children}

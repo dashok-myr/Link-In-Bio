@@ -4,6 +4,7 @@ import arrowDown from "../assets/arrow-down.svg";
 import { IPlatform, SOCIAL_MEDIA_PLATFORMS } from "./SOCIAL_MEDIA_PLATFORMS.ts";
 
 import { IPlatformLabel, PLATFORM_INFO } from "./PLATFORM_INFO.ts";
+import classNames from "classnames";
 
 const dropdownPlatforms = [
   SOCIAL_MEDIA_PLATFORMS.LINKEDIN,
@@ -19,6 +20,7 @@ interface ILinkProps {
   onAddPlatformClick: (platform: IPlatform) => void;
   onUrlChange: React.ChangeEventHandler<HTMLInputElement>;
   url: string;
+  isError: boolean;
 }
 
 export function Link({
@@ -28,6 +30,7 @@ export function Link({
   onAddPlatformClick,
   onUrlChange,
   url,
+  isError,
 }: ILinkProps) {
   const [isDropdownDisplay, setIsDropdownDisplay] = useState(false);
 
@@ -80,12 +83,24 @@ export function Link({
       </div>
       <div className="pt-5">
         <div className="text-xs text-dark-med pb-1">Link</div>
-        <input
-          value={url}
-          onChange={onUrlChange}
-          className="relative flex w-full justify-start gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-thin text-gray-900 hover:shadow-md ring-1 ring-inset ring-gray-300 hover:ring-purple-med hover:bg-gray-50"
-          placeholder="e.g https://www.github/yourname"
-        />
+        <div className="relative">
+          {isError && !url && (
+            <div className="absolute text-xs text-red-500 right-2 top-2.5 z-10">
+              Please check the URL
+            </div>
+          )}
+          <input
+            value={url}
+            onChange={onUrlChange}
+            className={classNames(
+              "relative flex w-full justify-start gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-thin text-gray-900 hover:shadow-md ring-1 ring-inset ring-gray-300 hover:ring-purple-med hover:bg-gray-50",
+              {
+                "ring-1 outline-none ring-red-400": isError && !url,
+              }
+            )}
+            placeholder="e.g https://www.github/yourname"
+          />
+        </div>
       </div>
     </div>
   );
