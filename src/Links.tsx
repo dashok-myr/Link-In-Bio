@@ -3,6 +3,7 @@ import arrowRight from "./assets/arrow-right.svg";
 import { PreviewLinkSkeleton } from "./LinksBody/BodyPreview.tsx";
 import { useContext } from "react";
 import { LinksContext } from "./context/LinksProvider.tsx";
+import { Link } from "react-router-dom";
 
 export default function Links() {
   const { links } = useContext(LinksContext);
@@ -10,7 +11,7 @@ export default function Links() {
   return (
     <div>
       {links.length > 0 ? (
-        links.map(({ platform }) => {
+        links.map(({ platform, url }) => {
           if (platform === null) {
             return (
               <div
@@ -23,7 +24,9 @@ export default function Links() {
           const { color, icon, label } = PLATFORM_INFO[platform];
 
           return (
-            <div
+            <Link
+              target="_blank"
+              to={url}
               key={platform}
               className="flex items-center gap-3 rounded-lg w-56 h-12 p-3 mb-5"
               style={{ backgroundColor: color }}
@@ -33,7 +36,7 @@ export default function Links() {
               <div className="flex w-full justify-end">
                 <img className="w-5" src={arrowRight} alt="icon" />
               </div>
-            </div>
+            </Link>
           );
         })
       ) : (
