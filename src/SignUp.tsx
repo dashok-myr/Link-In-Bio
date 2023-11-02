@@ -140,10 +140,7 @@ export default function SignUp({ onSignUpSuccess }: SignUpFormProps) {
               </button>
               <p className="flex justify-center text-sm font-light text-gray-500">
                 <span className="pr-2">Already have an account?</span>
-                <Link
-                  to="/signin"
-                  className="font-sm text-purple hover:underline"
-                >
+                <Link to="/" className="font-sm text-purple hover:underline">
                   Login here
                 </Link>
               </p>
