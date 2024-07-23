@@ -1,20 +1,22 @@
-import { Route, Routes, useNavigate } from "react-router-dom";
-import Navigation from "./Navigation.tsx";
-import LinksBody from "./LinksBody";
+import { Route, Routes } from "react-router-dom";
+import Navigation from "./components/Navigation.tsx";
+import LinksBuilder from "./pages/LinksBuilder";
 import LinksProvider from "./context/LinksProvider.tsx";
-import ProfileDetailsBody from "./ProfileDitailsBody";
-import SignIn from "./SignIn.tsx";
+import ProfileDetails from "./pages/ProfileDetails";
+import SignIn from "./pages/SignIn.tsx";
 import "./index.css";
-import SignUp from "./SignUp.tsx";
-import { UserContext } from "./context/UserProvider.tsx";
-import Preview from "./Preview.tsx";
+import SignUp from "./pages/SignUp.tsx";
+import Preview from "./pages/Preview.tsx";
 import { signOutUser } from "./firebase/firebase.tsx";
 import NotificationProvider from "./context/NotificationProvider.tsx";
-import { useContext } from "react";
+import useAppNavigation from "./hooks/useAppNavigation.ts";
+import { useUserContext } from "./context/UserProvider.tsx";
 
 export default function App() {
-  const navigate = useNavigate();
-  const { user } = useContext(UserContext);
+  const { user } = useUserContext();
+
+  const { navigateHome, navigateToProfile, navigateToPreview } =
+    useAppNavigation();
 
   return (
     <>
@@ -29,7 +31,7 @@ export default function App() {
                     element={
                       <SignIn
                         onSignInSuccess={() => {
-                          navigate("/");
+                          navigateHome();
                         }}
                       />
                     }
@@ -39,7 +41,7 @@ export default function App() {
                     element={
                       <SignUp
                         onSignUpSuccess={() => {
-                          navigate("/");
+                          navigateHome();
                         }}
                       />
                     }
@@ -51,21 +53,27 @@ export default function App() {
                     path="/"
                     element={
                       <Navigation
-                        onLinksClick={() => navigate("/")}
-                        onProfileClick={() => navigate("/profile")}
+                        onLinksClick={() => {
+                          navigateHome();
+                        }}
+                        onProfileClick={() => {
+                          navigateToProfile();
+                        }}
                         onSignOutBtn={() => {
+                          navigateHome();
                           signOutUser();
-                          navigate("/");
                         }}
                         onSignInBtn={() => {
-                          navigate("/");
+                          navigateHome();
                         }}
-                        onPreviewBtn={() => navigate("/preview")}
+                        onPreviewBtn={() => {
+                          navigateToPreview();
+                        }}
                       />
                     }
                   >
-                    <Route index element={<LinksBody />} />
-                    <Route path="profile" element={<ProfileDetailsBody />} />
+                    <Route index element={<LinksBuilder />} />
+                    <Route path="profile" element={<ProfileDetails />} />
                   </Route>
                   <Route path="preview" element={<Preview />} />
                 </>

@@ -1,10 +1,10 @@
-import empty from "../assets/illustration-empty.svg";
-import { Link } from "./Link.tsx";
-import { LinksContext } from "../context/LinksProvider.tsx";
-import { useContext, useState } from "react";
+import empty from "../../assets/illustration-empty.svg";
+import { LinkEditor } from "./LinkEditor.tsx";
+import { useLinksContext } from "../../context/LinksProvider.tsx";
+import { useState } from "react";
 import { PLATFORM_INFO } from "./PLATFORM_INFO.ts";
-import saved from "../assets/icon-changes-saved.svg";
-import { NotificationContext } from "../context/NotificationProvider.tsx";
+import saved from "../../assets/icon-changes-saved.svg";
+import { useNotificationContext } from "../../context/NotificationProvider.tsx";
 
 export function LinksEditor() {
   const {
@@ -13,13 +13,14 @@ export function LinksEditor() {
     removeLink,
     setLinkPlatform,
     setLinkUrl,
-    saveFireBaseLinks,
-  } = useContext(LinksContext);
-  const { setNotification } = useContext(NotificationContext);
+    syncFirebaseLinksWithLocalLinks,
+  } = useLinksContext();
+  const { setNotification } = useNotificationContext();
+
   const [isError, setIsError] = useState(false);
 
   return (
-    <div className="p-7 h-screen overflow-y-auto">
+    <div className="h-screen overflow-y-auto">
       <div className="text-xl text-dark font-semibold">
         Customize your links
       </div>
@@ -37,7 +38,7 @@ export function LinksEditor() {
         <div className="my-5">
           {links.map((link, index) => {
             return (
-              <Link
+              <LinkEditor
                 isError={isError}
                 key={index}
                 selectedDropdownOption={
@@ -45,7 +46,9 @@ export function LinksEditor() {
                 }
                 url={link.url}
                 linkNumber={index + 1}
-                onRemoveClick={() => removeLink(index)}
+                onRemoveClick={() => {
+                  removeLink(index, true);
+                }}
                 onAddPlatformClick={(platform) => {
                   setLinkPlatform(platform, index);
                 }}
@@ -71,14 +74,14 @@ export function LinksEditor() {
               setIsError(true);
               return;
             }
-            saveFireBaseLinks();
+            syncFirebaseLinksWithLocalLinks();
             setNotification({
               icon: saved,
               label: "Your changes were saved!",
               isDisplayed: true,
             });
           }}
-          className="bg-purple-light hover:bg-purple-med text-purple font-semibold py-2 px-5 rounded-lg"
+          className="bg-purple-light hover:bg-purple-med text-purple font-semibold py-2 px-5 rounded-lg w-full"
         >
           Save
         </button>

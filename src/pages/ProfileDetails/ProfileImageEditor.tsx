@@ -1,5 +1,5 @@
-import uploadImage from "../assets/icon-upload-image.svg";
-import uploadImageGray from "../assets/upload-img-white.svg";
+import uploadImage from "../../assets/icon-upload-image.svg";
+import uploadImageGray from "../../assets/upload-img-white.svg";
 import { useRef } from "react";
 
 interface IProfileImageEditor {
@@ -15,7 +15,6 @@ export default function ProfileImageEditor({
 
   return (
     <div className="flex items-center p-5 bg-dark-lighter rounded-lg">
-      <div className="text-sm text-dark-med basis-1/3">Profile Picture</div>
       <div className="flex items-center gap-5 flex-grow">
         <div
           className="cursor-pointer"

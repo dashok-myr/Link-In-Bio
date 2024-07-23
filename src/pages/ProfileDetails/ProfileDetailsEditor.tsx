@@ -1,9 +1,8 @@
 import ProfileImageEditor from "./ProfileImageEditor.tsx";
 import ProfileUserInfo from "./ProfileUserInfo.tsx";
-import { useContext, useState } from "react";
-import { UserContext } from "../context/UserProvider.tsx";
-import saved from "../assets/icon-changes-saved.svg";
-import { NotificationContext } from "../context/NotificationProvider.tsx";
+import { useUserContext } from "../../context/UserProvider.tsx";
+import saved from "../../assets/icon-changes-saved.svg";
+import { useNotificationContext } from "../../context/NotificationProvider.tsx";
 
 export default function ProfileDetailsEditor() {
   const {
@@ -12,13 +11,13 @@ export default function ProfileDetailsEditor() {
     setLastName,
     setEmail,
     setImage,
-    saveFirebaseUserInfo,
-  } = useContext(UserContext);
-  const { setNotification } = useContext(NotificationContext);
-
-  const [isError, setIsError] = useState(false);
+    syncFirebaseUserWithLocalUser,
+  } = useUserContext();
+  const { setNotification } = useNotificationContext();
 
   if (!user) return null;
+
+  const { profileUrl, firstName, lastName, email } = user;
 
   return (
     <div className="flex flex-col gap-5">
@@ -27,41 +26,36 @@ export default function ProfileDetailsEditor() {
         Add your details to create a personal touch to your profile.
       </div>
       <ProfileImageEditor
-        profileUrl={user.profileUrl}
+        profileUrl={profileUrl}
         onImageChange={(file) => {
-          setImage(file);
+          setImage(file, true);
         }}
       />
       <ProfileUserInfo
-        isError={isError}
         onNameChange={(e) => {
           setName(e.target.value);
         }}
-        firstName={user.firstName}
+        firstName={firstName}
         onLastNameChange={(e) => {
           setLastName(e.target.value);
         }}
-        lastName={user.lastName}
+        lastName={lastName}
         onEmailChange={(e) => {
           setEmail(e.target.value);
         }}
-        email={user.email}
+        email={email}
       />
       <div className="flex justify-end mt-5">
         <button
           onClick={() => {
-            if (user?.firstName === "" || user?.lastName === "") {
-              setIsError(true);
-              return;
-            }
-            saveFirebaseUserInfo(user?.uid);
+            syncFirebaseUserWithLocalUser();
             setNotification({
               icon: saved,
               label: "Your changes were saved!",
               isDisplayed: true,
             });
           }}
-          className="bg-purple-light hover:bg-purple-med text-purple font-semibold py-2 px-5 rounded-lg"
+          className="bg-purple-light hover:bg-purple-med text-purple font-semibold py-2 px-5 rounded-lg w-full"
         >
           Save
         </button>

@@ -1,34 +1,32 @@
 import { Link } from "react-router-dom";
+import { IUser } from "../context/UserProvider.tsx";
 import React, { useState } from "react";
-import { IUser } from "./context/UserProvider.tsx";
-import { createAuthUserWithEmailAndPassword } from "./firebase/firebase.tsx";
+import { signInWithPassword } from "../firebase/firebase.tsx";
+import lock from "../assets/icon-password.svg";
+import envelope from "../assets/icon-email.svg";
 import classNames from "classnames";
-import lock from "./assets/icon-password.svg";
-import envelope from "./assets/icon-email.svg";
-
-interface SignUpFormProps {
-  onSignUpSuccess: (user: IUser | null) => void;
-}
 
 const defaultFormField = {
   email: "",
   password: "",
 };
 
-export default function SignUp({ onSignUpSuccess }: SignUpFormProps) {
-  const [formFields, setFormFields] = useState(defaultFormField);
-  const [isError, setIsError] = useState(false);
+interface ISignInProps {
+  onSignInSuccess: (user: IUser | null) => void;
+}
 
+export default function SignIn({ onSignInSuccess }: ISignInProps) {
+  const [isError, setIsError] = useState(false);
+  const [formFields, setFormFields] = useState(defaultFormField);
   const { email, password } = formFields;
 
-  const onInputFormHandle = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-
+  const onInputFormHandle = (event: React.FormEvent<HTMLInputElement>) => {
+    const { name, value } = event.target as HTMLInputElement;
     setFormFields({ ...formFields, [name]: value });
     setIsError(false);
   };
 
-  const onSignUp = async (
+  const onSignIn = async (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     event.preventDefault();
@@ -39,34 +37,32 @@ export default function SignUp({ onSignUpSuccess }: SignUpFormProps) {
     }
 
     try {
-      const authUser = await createAuthUserWithEmailAndPassword(
-        email,
-        password
-      );
-      const user = authUser?.user;
-      if (!user) return;
-
+      const userCredential = await signInWithPassword(email, password);
       setFormFields(defaultFormField);
-
-      onSignUpSuccess(user as unknown as IUser);
+      onSignInSuccess(userCredential.user as unknown as IUser);
     } catch (error) {
       console.log("user creation encountered an error", error);
     }
   };
 
   return (
-    <section className="bg-gray-50">
+    <section>
       <div className="flex flex-col items-center justify-center h-screen">
         <div className="w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0">
           <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-              Create account
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-orange md:text-2xl">
+              Log In
             </h1>
-            <form className="space-y-4 md:space-y-6" action="#">
+            <form className="space-y-4 md:space-y-6" action="src/routers#">
               <div>
                 <label
                   htmlFor="email"
-                  className="block mb-2 text-sm font-medium text-gray-900"
+                  className={classNames(
+                    "block mb-2 text-sm font-medium text-gray-900",
+                    {
+                      "text-red-400": isError,
+                    }
+                  )}
                 >
                   Your email
                 </label>
@@ -100,7 +96,12 @@ export default function SignUp({ onSignUpSuccess }: SignUpFormProps) {
               <div>
                 <label
                   htmlFor="password"
-                  className="block mb-2 text-sm font-medium text-gray-900 "
+                  className={classNames(
+                    "block mb-2 text-sm font-medium text-gray-900",
+                    {
+                      "text-red-400": isError,
+                    }
+                  )}
                 >
                   Password
                 </label>
@@ -131,17 +132,25 @@ export default function SignUp({ onSignUpSuccess }: SignUpFormProps) {
                   />
                 </div>
               </div>
-              <button
-                onClick={onSignUp}
-                type="submit"
-                className="w-full text-white bg-purple hover:bg-purple-light hover:text-purple font-medium rounded-lg text-sm px-5 py-2.5 text-center"
-              >
-                Create an account
-              </button>
+              <div className="flex flex-col">
+                <div className="pb-5">
+                  <button
+                    onClick={onSignIn}
+                    type="submit"
+                    className="w-full text-white bg-purple hover:bg-purple-light hover:text-purple focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                  >
+                    Log In with Email
+                  </button>
+                </div>
+              </div>
+
               <p className="flex justify-center text-sm font-light text-gray-500">
-                <span className="pr-2">Already have an account?</span>
-                <Link to="/" className="font-sm text-purple hover:underline">
-                  Login here
+                <span className="pr-2">Don't have an account? </span>
+                <Link
+                  to="/signup"
+                  className="font-sm text-purple hover:underline"
+                >
+                  Create account
                 </Link>
               </p>
             </form>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import arrowDown from "../assets/arrow-down.svg";
+import arrowDown from "../../assets/arrow-down.svg";
 
 import { IPlatform, SOCIAL_MEDIA_PLATFORMS } from "./SOCIAL_MEDIA_PLATFORMS.ts";
 
@@ -23,7 +23,7 @@ interface ILinkProps {
   isError: boolean;
 }
 
-export function Link({
+export function LinkEditor({
   selectedDropdownOption,
   linkNumber,
   onRemoveClick,
@@ -71,7 +71,7 @@ export function Link({
                       setIsDropdownDisplay(false);
                       onAddPlatformClick(platform);
                     }}
-                    className="text-gray-700 px-4 py-2 text-sm"
+                    className="text-gray-700 px-4 py-2 text-sm w-full text-left"
                   >
                     {label}
                   </button>

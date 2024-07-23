@@ -1,7 +1,9 @@
 import classNames from "classnames";
 import { Outlet, useLocation } from "react-router-dom";
-import { UserContext } from "./context/UserProvider.tsx";
-import { useContext } from "react";
+import { useUserContext } from "../context/UserProvider.tsx";
+import { MdAccountCircle } from "react-icons/md";
+import useIsMobile from "../hooks/useIsMobile.ts";
+import { FiLogOut } from "react-icons/fi";
 
 interface INavBarProp {
   onLinksClick: () => void;
@@ -18,14 +20,16 @@ export default function Navigation({
   onSignInBtn,
   onPreviewBtn,
 }: INavBarProp) {
+  const { user } = useUserContext();
+
+  const isMobile = useIsMobile();
   const location = useLocation();
-  const { user } = useContext(UserContext);
 
   return (
     <div className="p-5">
       <div className="p-3 bg-white rounded-lg">
         <div className="flex justify-between items-center">
-          <div className="font-bold">LIB</div>
+          <div className="font-bold hidden lg:block">LIB</div>
           <div className="flex items-center gap-8">
             <button
               onClick={onLinksClick}
@@ -46,11 +50,15 @@ export default function Navigation({
                   location.pathname !== "/profile",
               })}
             >
-              Profile Details
+              {isMobile ? (
+                <MdAccountCircle className="text-purple text-2xl" />
+              ) : (
+                "Profile Details"
+              )}
             </button>
           </div>
           <div className="flex items-center gap-3">
-            {!user?.email ? (
+            {!user ? (
               <button
                 onClick={onSignInBtn}
                 className="font-medium text-purple hover:text-dark"
@@ -62,7 +70,11 @@ export default function Navigation({
                 onClick={onSignOutBtn}
                 className="font-medium text-purple hover:text-dark"
               >
-                Sign Out
+                {isMobile ? (
+                  <FiLogOut className="text-purple text-2xl" />
+                ) : (
+                  "Sign Out"
+                )}
               </button>
             )}
             <button

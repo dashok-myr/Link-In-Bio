@@ -5,12 +5,12 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { IPlatform } from "../LinksBody/SOCIAL_MEDIA_PLATFORMS.ts";
+import { IPlatform } from "../pages/LinksBuilder/SOCIAL_MEDIA_PLATFORMS.ts";
 import {
   getFirebaseLinksDocument,
   updateFirebaseLinkDocument,
 } from "../firebase/firebase.tsx";
-import { UserContext } from "./UserProvider.tsx";
+import { useUserContext } from "./UserProvider.tsx";
 
 export interface ILink {
   platform: IPlatform | null;
@@ -21,10 +21,14 @@ export const LinksContext = createContext<{
   links: ILink[];
   setLinks: React.Dispatch<React.SetStateAction<ILink[]>>;
   addNewLink: () => void;
-  removeLink: (index: number) => void;
-  setLinkPlatform: (platform: IPlatform, index: number) => void;
-  setLinkUrl: (url: string, index: number) => void;
-  saveFireBaseLinks: () => void;
+  removeLink: (index: number, upload?: boolean) => void;
+  setLinkPlatform: (
+    platform: IPlatform,
+    index: number,
+    upload?: boolean
+  ) => void;
+  setLinkUrl: (url: string, index: number, upload?: boolean) => void;
+  syncFirebaseLinksWithLocalLinks: () => void;
 }>({
   links: [],
   setLinks: () => {},
@@ -32,12 +36,12 @@ export const LinksContext = createContext<{
   removeLink: () => {},
   setLinkPlatform: () => {},
   setLinkUrl: () => {},
-  saveFireBaseLinks: () => {},
+  syncFirebaseLinksWithLocalLinks: () => {},
 });
 
 export default function LinksProvider({ children }: { children: ReactNode }) {
   const [links, setLinks] = useState<ILink[]>([]);
-  const { user } = useContext(UserContext);
+  const { user } = useUserContext();
 
   useEffect(() => {
     async function loadFirebaseLinks() {
@@ -52,32 +56,43 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
     setLinks([...links, { platform: null, url: "" }]);
   }
 
-  function removeLink(index: number) {
+  function removeLink(index: number, upload = false) {
     if (!user) return;
 
     const linksCopy = [...links];
     linksCopy.splice(index, 1);
     setLinks(linksCopy);
-    updateFirebaseLinkDocument(user.uid, { links: linksCopy });
+
+    if (upload) {
+      updateFirebaseLinkDocument(user.uid, { links: linksCopy });
+    }
   }
 
-  function setLinkPlatform(platform: IPlatform, index: number) {
+  function setLinkPlatform(platform: IPlatform, index: number, upload = false) {
     if (!user) return;
 
-    const copyLink = [...links];
-    copyLink[index].platform = platform;
-    setLinks(copyLink);
+    const linksCopy = [...links];
+    linksCopy[index].platform = platform;
+    setLinks(linksCopy);
+
+    if (upload) {
+      updateFirebaseLinkDocument(user.uid, { links: linksCopy });
+    }
   }
 
-  function setLinkUrl(url: string, index: number) {
+  function setLinkUrl(url: string, index: number, upload = false) {
     if (!user) return;
 
-    const copyLink = [...links];
-    copyLink[index].url = url;
-    setLinks(copyLink);
+    const linksCopy = [...links];
+    linksCopy[index].url = url;
+    setLinks(linksCopy);
+
+    if (upload) {
+      updateFirebaseLinkDocument(user.uid, { links: linksCopy });
+    }
   }
 
-  function saveFireBaseLinks() {
+  function syncFirebaseLinksWithLocalLinks() {
     if (!user) return;
 
     updateFirebaseLinkDocument(user.uid, { links: links });
@@ -92,10 +107,22 @@ export default function LinksProvider({ children }: { children: ReactNode }) {
         removeLink,
         setLinkPlatform,
         setLinkUrl,
-        saveFireBaseLinks,
+        syncFirebaseLinksWithLocalLinks,
       }}
     >
       {children}
     </LinksContext.Provider>
   );
+}
+
+export function useLinksContext() {
+  const context = useContext(LinksContext);
+
+  if (!context) {
+    throw new Error(
+      "Make sure that this component is wrapped by LinksProvider"
+    );
+  }
+
+  return context;
 }
